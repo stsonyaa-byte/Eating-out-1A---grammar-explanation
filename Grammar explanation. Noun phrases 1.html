@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Noun phrases 1: say exactly which one</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#14222f;--mute:#5b6b7a;--line:#cfd8e1;--noun:#0b6e7f;--noun-bg:#d5eef1;--mod:#a4510a;--mod-bg:#fbe6d0;--ok:#1b7a43;--ok-bg:#d9f2e3;--bad:#a1281f;--bad-bg:#fbdedb;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1720;--card:#18232f;--ink:#e6edf3;--mute:#9db0c0;--line:#2b3b4b;--noun:#6fd0e0;--noun-bg:#12414a;--mod:#f4b274;--mod-bg:#4a2c10;--ok:#6fdc9b;--ok-bg:#143a25;--bad:#ff9c92;--bad-bg:#4a1b17}}
+:root[data-theme="dark"]{--bg:#0f1720;--card:#18232f;--ink:#e6edf3;--mute:#9db0c0;--line:#2b3b4b;--noun:#6fd0e0;--noun-bg:#12414a;--mod:#f4b274;--mod-bg:#4a2c10;--ok:#6fdc9b;--ok-bg:#143a25;--bad:#ff9c92;--bad-bg:#4a1b17}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 "Lexend",system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:600 clamp(26px,5vw,36px)/1.2 "Source Serif 4",Georgia,serif;margin:8px 0 4px}
+.sub{color:var(--mute);margin:0 0 18px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+nav button{flex:1;min-width:48px;padding:8px 4px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font:inherit;font-size:14px;cursor:pointer}
+nav button.on{border-color:var(--noun);background:var(--noun-bg)}
+nav button.done::after{content:" ✓";color:var(--ok)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px}
+.card h2{font:600 22px/1.3 "Source Serif 4",Georgia,serif;margin:0 0 8px}
+.tag{display:inline-block;font-size:13px;color:var(--mute);margin-bottom:6px}
+.eg{font:italic 400 19px/1.5 "Source Serif 4",Georgia,serif;margin:8px 0}
+b.n{font-style:normal;font-weight:600;color:var(--noun);background:var(--noun-bg);padding:0 4px;border-radius:4px}
+mark.m{color:var(--mod);background:var(--mod-bg);padding:0 4px;border-radius:4px}
+.key{font-size:14px;color:var(--mute)}
+.rule{border-left:4px solid var(--noun);padding:4px 0 4px 14px;margin:12px 0}
+button.btn{font:inherit;font-size:15px;padding:8px 14px;border-radius:10px;border:2px solid var(--noun);background:transparent;color:var(--noun);cursor:pointer;margin:4px 6px 4px 0}
+button.btn:hover{background:var(--noun-bg)}
+.q{padding-top:14px;margin-top:14px;border-top:1px solid var(--line)}
+.q p{margin:0 0 8px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts button{font:inherit;font-size:16px;padding:8px 14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-align:left}
+.opts button:hover:not(:disabled){border-color:var(--noun)}
+.opts button.right{border-color:var(--ok);background:var(--ok-bg)}
+.opts button.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.fb{margin-top:8px;font-size:15px;min-height:1px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.hint{font-size:14px;color:var(--mute);background:none;border:none;text-decoration:underline;cursor:pointer;padding:0;margin-top:6px;font-family:inherit}
+.hintbox{font-size:14px;color:var(--mute);margin-top:4px}
+.go{display:flex;justify-content:space-between;margin-top:8px}
+.go button{font:inherit;padding:10px 18px;border-radius:10px;border:2px solid var(--noun);background:var(--noun);color:var(--card);cursor:pointer}
+.go button.ghost{background:transparent;color:var(--noun)}
+.go button:disabled{opacity:.35;cursor:default}
+textarea{width:100%;font:inherit;font-size:16px;padding:8px;border-radius:8px;border:2px solid var(--line);background:var(--bg);color:var(--ink);margin:4px 0 10px}
+label.chk{display:block;font-size:15px;margin:4px 0}
+:focus-visible{outline:3px solid var(--mod);outline-offset:2px}
+.swap{font-size:18px;margin:6px 0}
+.swap s{color:var(--bad)}
+</style>
+</head>
+<body>
+<main>
+<h1>Noun phrases: say exactly which one</h1>
+<p class="sub">Five short steps. First notice, then learn the pattern, then try it.</p>
+<nav id="nav" aria-label="Steps"></nav>
+<div id="stage"></div>
+<div class="go"><button class="ghost" id="prev">Back</button><button id="next">Next step</button></div>
+</main>
+<script>
+const N=(t)=>'<b class="n">'+t+'</b>',M=(t)=>'<mark class="m">'+t+'</mark>';
+const key='<p class="key"><b class="n">noun</b> = the thing, person or place &nbsp; <mark class="m">extra information</mark> = tells us which one</p>';
+const steps=[
+{name:"Notice",title:"Why add information to a noun?",
+ body:`<p>“I love that place.” Which place? Speakers often need to <b>clarify and define</b> a noun. They add information <b>after</b> it.</p>${key}
+ <p class="eg">I love that pizza ${N("place")} ${M("in the centre of town")}.</p>
+ <p>Remember the three tools:</p>
+ <div class="rule"><b>1.</b> a prepositional phrase (<i>with a terrace</i>)<br><b>2.</b> an infinitive with <i>to</i> (<i>to rent</i>)<br><b>3.</b> a relative clause (<i>who has the dog</i>)</div>`,
+ qs:[{q:"In “I love that pizza place in the centre of town”, which words tell us WHICH pizza place?",o:["that pizza","in the centre of town","I love"],a:1,why:"Yes. It comes after the noun and defines it.",h:"Look at what comes right after “place”."}]},
+{name:"1 · Preposition",title:"Tool 1: a prepositional phrase",
+ body:`<p>Use it to show <b>where</b> the thing is or <b>what it has</b>.</p>${key}
+ <p class="eg">I love that pizza ${N("place")} ${M("in the centre of town")}. <span class="key">(where it is)</span></p>
+ <p class="eg">There’s a Greek ${N("restaurant")} ${M("with a lovely terrace")}. <span class="key">(what it has)</span></p>
+ <div class="rule">noun + <i>in / on / with / near…</i> + noun</div>`,
+ qs:[{q:"I’m looking for a flat ___ a balcony.",o:["with","to","who"],a:0,why:"“with” shows what the flat has.",h:"The flat has a balcony."},
+     {q:"Which phrase shows WHERE? “Do you know the café ___?”",o:["with free wifi","on the corner","to study"],a:1,why:"“on the corner” gives the location.",h:"Where is the café?"}]},
+{name:"2 · Infinitive",title:"Tool 2: an infinitive with to",
+ body:`<p>Use it to show the <b>general function</b> of the thing: what it is for.</p>${key}
+ <p class="eg">I need a ${N("room")} ${M("to rent")}.</p>
+ <button class="btn" id="ex1">Show the long version</button><div class="swap" id="long1"></div>
+ <p class="eg">We’re looking for ${N("somewhere")} ${M("to eat")}.</p>
+ <button class="btn" id="ex2">Show the long version</button><div class="swap" id="long2"></div>`,
+ qs:[{q:"I need a room ___.",o:["to rent","which rent","in rent"],a:0,why:"Function of the room: something I want to rent.",h:"No relative pronoun is needed. Use to + verb."},
+     {q:"“A pen to write with” means a pen that is…",o:["used for writing","writing by itself","in writing"],a:0,why:"The infinitive shows what it is for.",h:"What is the function of the pen?"}],
+ init(){const set=(b,d,t)=>document.getElementById(b).onclick=()=>document.getElementById(d).innerHTML=t;
+  set("ex1","long1","a room <b>which I am renting</b> or <b>which I want to rent</b>");set("ex2","long2","a place <b>where we can eat</b>")}},
+{name:"3 · Relative clause",title:"Tool 3: a relative clause",
+ body:`<p>Add <b>necessary</b> information with a clause that starts with a relative pronoun.</p>${key}
+ <p class="eg">That’s the ${N("person")} ${M("who/that I spoke to before")}.</p>
+ <p class="eg">I can give you the ${N("thing")} ${M("which/that I had")}.</p>
+ <p class="eg">The ${N("place")} ${M("where we went last year")} was very expensive.</p>
+ <div class="rule"><b>who</b> people &nbsp; <b>which</b> things &nbsp; <b>where</b> places &nbsp; <b>that</b> people or things</div>`,
+ qs:[{q:"That’s the person ___ I spoke to before.",o:["which","who/that","where"],a:1,why:"A person: who or that.",h:"Is it a person, a thing or a place?"},
+     {q:"The place ___ we went last year was very expensive.",o:["who","where","to"],a:1,why:"A place: where.",h:"Use the word for places."},
+     {q:"The last time ___ I saw you was Wednesday.",o:["that","who","where"],a:0,why:"A time: that.",h:"Neither a person nor a place."}]},
+{name:"4 · Drop it?",title:"Can you drop the relative pronoun?",
+ body:`<p>The test: is the thing you define the <b>subject</b> or the <b>object</b> of the verb in the clause?</p>
+ <div class="rule"><b>Object</b>: you can drop the pronoun.<br><b>Subject</b>: you must keep it.</div>
+ <p class="eg">Jo is the friend who has the ${N("hotel")} (that) I was staying in.</p>
+ <p class="key">Try removing the pronoun:</p>
+ <button class="btn" id="d1">Remove “who”</button><button class="btn" id="d2">Remove “that”</button>
+ <div class="swap" id="dout"></div>`,
+ qs:[{q:"The film ___ we saw was great. Can we drop “that”?",o:["Yes","No"],a:0,why:"“we” is the subject of “saw”. The film is the object, so you can drop it.",h:"Who did the seeing? We. So the film is the…?"},
+     {q:"Do you know the woman who has the dog? Can we drop “who”?",o:["Yes","No"],a:1,why:"“the woman has the dog”: she is the subject, so you must keep “who”.",h:"Who has the dog? The woman."},
+     {q:"The man ___ called you left a message. Can we drop the pronoun?",o:["Yes","No"],a:1,why:"The man did the calling. He is the subject, so keep who/that.",h:"Who called? The man."}],
+ init(){const o=document.getElementById("dout");
+  document.getElementById("d1").onclick=()=>o.innerHTML="Jo is the friend <s>who</s> has the hotel…  ✗ Missing subject: this does not work.";
+  document.getElementById("d2").onclick=()=>o.innerHTML="…the hotel <s>that</s> I was staying in.  ✓ “I” is the subject, so this works."}},
+{name:"5 · Mix & make",title:"Put it all together",
+ body:`<p>You can define a noun in <b>more than one way</b>.</p>
+ <p class="eg">There’s a great ${N("place")} ${M("on Church Street")} ${M("which serves excellent Lebanese food")}.</p>
+ <p class="key">Preposition phrase + relative clause.</p>`,
+ qs:[{q:"“a room to rent” uses…",o:["a prepositional phrase","an infinitive","a relative clause"],a:1,why:"to + verb gives the function.",h:"Look for “to”."},
+     {q:"“the woman who has the dog” uses…",o:["a prepositional phrase","an infinitive","a relative clause"],a:2,why:"who + verb = relative clause.",h:"Look for who/which/that/where."},
+     {q:"“a restaurant on the corner which serves pizza” uses…",o:["only a prepositional phrase","only a relative clause","both"],a:2,why:"“on the corner” + “which serves pizza”.",h:"Count the pieces of extra information."}],
+ make:true}
+];
+let cur=0;const done=new Set();const solved={};
+const nav=document.getElementById("nav"),stage=document.getElementById("stage");
+function renderNav(){nav.innerHTML="";steps.forEach((s,i)=>{const b=document.createElement("button");b.textContent=s.name;b.className=(i==cur?"on ":"")+(done.has(i)?"done":"");b.onclick=()=>{cur=i;render()};nav.appendChild(b)})}
+function render(){const s=steps[cur];renderNav();
+ let h=`<div class="card"><span class="tag">Step ${cur+1} of ${steps.length}</span><h2>${s.title}</h2>${s.body}</div><div class="card"><h2>Your turn</h2>`;
+ s.qs.forEach((q,i)=>{h+=`<div class="q" data-i="${i}"><p>${q.q}</p><div class="opts">${q.o.map((t,j)=>`<button data-j="${j}">${t}</button>`).join("")}</div><div class="fb" aria-live="polite"></div><button class="hint">Need a hint?</button><div class="hintbox"></div></div>`});
+ if(s.make)h+=`<div class="q"><p><b>Now write your own.</b> Add information to each noun.</p>
+ <label>A flat… (use a prepositional phrase)<textarea rows="1" placeholder="I’d like a flat with…"></textarea></label>
+ <label>A place… (use an infinitive)<textarea rows="1" placeholder="I need somewhere to…"></textarea></label>
+ <label>A person… (use a relative clause)<textarea rows="1" placeholder="I know someone who…"></textarea></label>
+ <p class="key">Check yourself:</p><label class="chk"><input type="checkbox"> The information comes after the noun.</label><label class="chk"><input type="checkbox"> I used who for people and where for places.</label><label class="chk"><input type="checkbox"> I kept the pronoun when it is the subject.</label></div>`;
+ stage.innerHTML=h+"</div>";
+ stage.querySelectorAll(".q[data-i]").forEach(el=>{const q=s.qs[el.dataset.i],fb=el.querySelector(".fb"),bs=el.querySelectorAll(".opts button");
+  const key=cur+"-"+el.dataset.i;
+  const mark=(j,ok)=>{bs[j].classList.add(ok?"right":"wrong")};
+  if(solved[key]){bs.forEach(b=>b.disabled=true);mark(q.a,true);fb.className="fb ok";fb.textContent="✓ "+q.why}
+  bs.forEach(b=>b.onclick=()=>{const j=+b.dataset.j;
+   if(j==q.a){mark(j,true);bs.forEach(x=>x.disabled=true);fb.className="fb ok";fb.textContent="✓ "+q.why;solved[key]=1;check()}
+   else{mark(j,false);b.disabled=true;fb.className="fb no";fb.textContent="Not quite. Try again."}});
+  el.querySelector(".hint").onclick=()=>el.querySelector(".hintbox").textContent=q.h});
+ if(s.init)s.init();
+ document.getElementById("prev").disabled=cur==0;document.getElementById("next").disabled=cur==steps.length-1}
+function check(){if(steps[cur].qs.every((_,i)=>solved[cur+"-"+i])){done.add(cur);renderNav()}}
+document.getElementById("prev").onclick=()=>{if(cur>0){cur--;render();scrollTo(0,0)}};
+document.getElementById("next").onclick=()=>{if(cur<steps.length-1){cur++;render();scrollTo(0,0)}};
+render();
+</script>
+</body>
+</html>
